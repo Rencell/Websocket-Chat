@@ -1,0 +1,22 @@
+#virtual environment
+venv/
+
+# Static file
+/media/
+mysite/media/
+
+# Python bytecode files
+__pycache__/
+*.py[cod]
+
+# Database files
+*.sqlite3
+/db.sqlite3
+
+# Caches
+*.cache
+
+# Temporary files
+*.tmp
+*.bak
+*.orig
