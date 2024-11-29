@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Room{% endblock %}
+
+{% block content %}
+
+    <a href=" {% url 'core_index' %}"> Back Room </a>
+    <h1>hello</h1>
+    <p>Chat here: </p>
+    <div hx-ext="ws" ws-connect="/connect/{{slug}}" >
+        <form id="form" ws-send>
+            <input name="chat_messages">
+            <input type="submit" value="submit">
+        </form>
+        <div id="chat_room">
+
+            {% for message in messages %}
+                <div><strong>{{message.user}}</strong> :{{message.message}} </div>
+            {% endfor %}
+
+        </div>
+    </div>
+{% endblock %}

@@ -1,27 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://unpkg.com/htmx.org@2.0.3" integrity="sha384-0895/pl2MU10Hqc6jd4RvrthNlDiE9U1tWmX7WRESftEDRosgxNsQG/Ze9YMRzHq" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/ws.js"></script>
-    
-    <title>Document</title>
-    
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
     
     <form method="POST" action="{% url 'logout' %}">
         {% csrf_token %}
         <button type="submit">Logout</button>
     </form>
-    <div hx-ext="ws" ws-connect="ws/chat/">
-        <form id="form" ws-send>
-            <input name="chat_message">
-        </form>
-        <div id="chat_room">
-        </div>
-    </div>
 
-</body>
-</html>
+    <!-- Make join -->
+    <!-- Make room -->
+
+    <a href=" {% url 'core_join' %}"> Join Room </a>
+    <a href=" {% url 'core_create' %}"> Make Room </a>
+
+
+
+    
+{% endblock %}
