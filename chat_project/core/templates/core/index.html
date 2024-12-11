@@ -3,19 +3,49 @@
 {% block title %}Welcome{% endblock %}
 
 {% block content %}
+
+<form method="POST" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+</form>
+
+<!-- Make join -->
+<!-- Make room -->
+
+{% for user in users %}
+
+        {{user.username}} 
     
-    <form method="POST" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit">Logout</button>
-    </form>
+        <form action="{% url 'core_index' %}" method="post">
+            {% csrf_token %}
 
-    <!-- Make join -->
-    <!-- Make room -->
+            <input type="hidden" name="auth" value="{{ user.id }}">
+            <input type="submit" value="Add Friend">
+        </form>
+        
+{% endfor %}
 
-    <a href=" {% url 'core_join' %}"> Join Room </a>
-    <a href=" {% url 'core_create' %}"> Make Room </a>
+<hr>
+
+Already Friends:
 
 
+{% for friend  in already_friends %}
 
+    <div style="display: flex; gap:10px">
+        {{friend}}
+        <a href="{% url 'core_conversation' friend.id %}">Chat</a>
+    </div>
+
+{% endfor %}
     
+
+
+
+{% if messages %}
+    {% for message in messages %}
+        <p class="alert">{{ message }}</p>
+    {% endfor %}
+{% endif %}
+
 {% endblock %}

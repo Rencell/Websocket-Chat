@@ -2,8 +2,10 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer # type: ignore
 from channels.db import database_sync_to_async, sync_to_async # type: ignore
 
-from core.models import Room,Message
 from Accounts.models import User
+from core.models import Friend,conversation
+
+from django.db.models import Q
 
 class ChatConsumer(AsyncWebsocketConsumer):
 
@@ -34,12 +36,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data=None, bytes_data=None):
         
         json_my_text = json.loads(text_data)
-        message = json_my_text["chat_messages"]
+        message = json_my_text["chat"]
+        fucker = json_my_text["friend"]
+        
         user = self.user
         username = user.username
-        room = self.room_slug
+        user2 = await database_sync_to_async(User.objects.get)(id=int(fucker))
         
-        await self.save_messages(room, user, message)
+        friend = await database_sync_to_async(Friend.objects.get)(Q(user1=user, user2=user2) | Q(user2=user, user1=user2))
+        await self.save_messages(friend, user, message)
         
 
         await self.channel_layer.group_send(
@@ -50,6 +55,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "username" : username
             }
         )
+        
 
 
         
@@ -57,8 +63,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message = event["message"]
         user = event["username"]
 
-        message_html = f"<div hx-swap-oob='beforeend:#chat_room'><p><b>{user}</b>: {message}</p></div>"
-
+       
+        
+        if user == self.user.username:
+            message_html = f"<div hx-swap-oob='beforeend:#chat_room'><p style='margin-inline-start: auto;'>{message}: <b>{user}</b></p></div>"
+        else:
+            message_html = f"<div hx-swap-oob='beforeend:#chat_room'><p><b>{user}</b>: {message}</p></div>"
+        
         await self.send(
             text_data=json.dumps(
                 {
@@ -66,15 +77,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }
             )
         )
+        
     
     @sync_to_async
-    def save_messages(self, room, user, message):
-        room = Room.objects.get(slug=room)
-        Message.objects.create(message=message, user=user, room=room)
-        print("Saved")
+    def save_messages(self, friend, user, message):
+        conversation.objects.create(friend=friend, sender=user, message=message)
+        
+       
         
     
     def view_user(self):
-        user_instance = User.objects.get(id=1)
-        self.user = user_instance.username
-        return self.user
+        # user_instance = User.objects.get(id=1)
+        # self.user = user_instance.username
+        # return self.user
+        pass

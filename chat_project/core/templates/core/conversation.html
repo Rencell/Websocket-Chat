@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Room{% endblock %}
+
+{% block content %}
+
+    <a href="/chat"><- Back</a>
+    <h1>Chat with {{param}}</h1>
+    
+    <div hx-ext="ws" ws-connect="/ws/chat/{{param}}/">
+
+        <div id="chat_room" style="display: flex; flex-direction: column;"> 
+            {% for convo in conversations %}
+                
+                {% if convo.sender.username == user.username %}
+                    
+                    <p style=" margin-inline-start: auto;">
+                        {{convo.message}}:
+                        <b> {{convo.sender}}</b>
+                    </p> 
+                {% else %}
+                    <p>
+                        <b> {{convo.sender}}</b>: 
+                        {{convo.message}}
+                    </p>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <form style="display: flex;" ws-send>
+            <input type="hidden" name="friend" value="{{friend}}">
+            <input style="flex-grow: 1;" type="text" name="chat">
+            <input type="submit">
+        </form>
+
+    </div>
+{% endblock %}          
