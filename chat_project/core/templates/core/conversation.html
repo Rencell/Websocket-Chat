@@ -4,33 +4,51 @@
 
 {% block content %}
 
+<div class="bg-slate-300 rounded-md p-5">
+
+
     <a href="/chat"><- Back</a>
-    <h1>Chat with {{param}}</h1>
+    <h1>Chat with {{friend.username}}</h1>
     
-    <div hx-ext="ws" ws-connect="/ws/chat/{{param}}/">
+    <div hx-ext="ws" ws-connect="/ws/chat/{{conversation_room}}/">
 
         <div id="chat_room" style="display: flex; flex-direction: column;"> 
             {% for convo in conversations %}
                 
                 {% if convo.sender.username == user.username %}
                     
-                    <p style=" margin-inline-start: auto;">
-                        {{convo.message}}:
-                        <b> {{convo.sender}}</b>
-                    </p> 
+                    
+                    <div class="ms-auto flex flex-col mb-3">
+                        <div class=" bg-white p-3 rounded-full ms-auto">
+
+                            {{convo.message}}   
+                        </div>
+                        <b class="text-xs"> {{convo.created_at}}</b>
+                    </div> 
                 {% else %}
-                    <p>
-                        <b> {{convo.sender}}</b>: 
-                        {{convo.message}}
-                    </p>
+                    
+
+                    <div>
+                        <div class=" bg-white p-3 rounded-full w-fit">
+
+                            {{convo.message}}   
+                        </div>
+                        <b class="text-xs"> {{convo.created_at}}</b>
+                    </div>
                 {% endif %}
             {% endfor %}
         </div>
-        <form style="display: flex;" ws-send>
-            <input type="hidden" name="friend" value="{{friend}}">
-            <input style="flex-grow: 1;" type="text" name="chat">
-            <input type="submit">
+        <form class="flex" ws-send>
+            <input type="hidden" name="friend" value="{{friend.id}}">
+            <input
+                type="text"
+                placeholder="Type here"
+                class="input input-bordered grow" 
+                name="chat"/>
         </form>
 
+        
+
     </div>
+</div>
 {% endblock %}          

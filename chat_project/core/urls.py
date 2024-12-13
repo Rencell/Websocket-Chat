@@ -5,6 +5,6 @@ from django.contrib.auth.views import LogoutView
 urlpatterns = [
     path('', views.index.as_view(), name="core_index"),
     path('logout/', LogoutView.as_view(), name='logout'),
-    path('<str:param>/conversation', views.conversations.as_view(), name='core_conversation')
+    path('<str:friend>/conversation', views.conversations.as_view(), name='core_conversation')
     
 ]

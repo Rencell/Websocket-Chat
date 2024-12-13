@@ -66,7 +66,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
        
         
         if user == self.user.username:
-            message_html = f"<div hx-swap-oob='beforeend:#chat_room'><p style='margin-inline-start: auto;'>{message}: <b>{user}</b></p></div>"
+            message_html = f"<div hx-swap-oob='beforeend:#chat_room'>\
+                                <div class='ms-auto flex flex-col mb-3'>\
+                                    <div class='bg-white p-3 rounded-full ms-auto'>{message}</div>\
+                                    <b class='text-xs'>{user}</b>\
+                                </div>\
+                            </div>"
         else:
             message_html = f"<div hx-swap-oob='beforeend:#chat_room'><p><b>{user}</b>: {message}</p></div>"
         

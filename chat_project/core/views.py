@@ -27,7 +27,9 @@ class index(LoginRequiredMixin,ListView):
     
     def get_queryset(self):
         friends = self.get_friends_ids()
-        return User.objects.exclude(id=self.request.user.id).exclude(id__in=Subquery(friends))
+        user = User.objects.exclude(id=self.request.user.id)
+        user = user.exclude(id__in=Subquery(friends))
+        return user
     
     
     def get_context_data(self, **kwargs):
@@ -55,30 +57,30 @@ class conversations(LoginRequiredMixin, ListView):
     model = conversation
     template_name = 'core/conversation.html'
     
+    def get_friend(self, user2):
+        query = Q(user1=self.request.user, user2=user2) | Q(user2=self.request.user, user1=user2)
+        return Friend.objects.get(query)
+    
     def get_queryset(self):
-        param = self.kwargs.get('param')
-        user2 = User.objects.get(id=int(param))
-        friend = Friend.objects.get(Q(user1=self.request.user, user2=user2) 
-                                    | Q(user2=self.request.user, user1=user2))
+        sender_id = self.kwargs.get('friend')
+        sender = User.objects.get(id=int(sender_id))
+        friend = self.get_friend(sender)
         queryset = conversation.objects.filter(friend=friend)
         
-        return queryset
-   
+        return queryset   
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        sender_id = self.kwargs.get('friend')
         
-        param = self.kwargs.get('param')
-        
-        user2 = User.objects.get(id=int(param))
-        friend = Friend.objects.get(Q(user1=self.request.user, user2=user2) 
-                                    | Q(user2=self.request.user, user1=user2))
+        sender = User.objects.get(id=int(sender_id))
+        friend = self.get_friend(sender) 
         queryset = conversation.objects.filter(friend=friend)
         
         
         context['conversations'] = queryset
-        context['param'] = friend.id
-        context['friend'] = param
+        context['conversation_room'] = friend.id
+        context['friend'] = sender
         return context
     
 
