@@ -4,7 +4,7 @@ from channels.db import database_sync_to_async, sync_to_async # type: ignore
 
 from Accounts.models import User
 from core.models import Friend,conversation
-
+from django.template.loader import get_template
 from django.db.models import Q
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -40,11 +40,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         fucker = json_my_text["friend"]
         
         user = self.user
-        username = user.username
         user2 = await database_sync_to_async(User.objects.get)(id=int(fucker))
         
         friend = await database_sync_to_async(Friend.objects.get)(Q(user1=user, user2=user2) | Q(user2=user, user1=user2))
-        await self.save_messages(friend, user, message)
+        created_at = await self.save_messages(friend, user, message)
         
 
         await self.channel_layer.group_send(
@@ -52,7 +51,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             {   
                 "type": "chat_message",
                 "message" : message,
-                "username" : username
+                "date" : created_at,
+                "user" : user.username
             }
         )
         
@@ -61,38 +61,28 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
     async def chat_message(self,event):
         message = event["message"]
-        user = event["username"]
+        date = event["date"]
+        user = event["user"]
 
-       
-        
         if user == self.user.username:
-            message_html = f"<div hx-swap-oob='beforeend:#chat_room'>\
-                                <div class='ms-auto flex flex-col mb-3'>\
-                                    <div class='bg-white p-3 rounded-full ms-auto'>{message}</div>\
-                                    <b class='text-xs'>{user}</b>\
-                                </div>\
-                            </div>"
-        else:
-            message_html = f"<div hx-swap-oob='beforeend:#chat_room'><p><b>{user}</b>: {message}</p></div>"
-        
-        await self.send(
-            text_data=json.dumps(
-                {
-                    "message": message_html
-                }
+            message_html = get_template("core/messages/sender.html").render(
+                context={"message" : message, "date": date}
             )
+        else:
+            message_html =  message_html = get_template("core/messages/receiver.html").render(
+                context={"message" : message, "date": date}
+            )
+        await self.send(
+            text_data= message_html
+            
         )
         
     
     @sync_to_async
     def save_messages(self, friend, user, message):
-        conversation.objects.create(friend=friend, sender=user, message=message)
+        convo = conversation.objects.create(friend=friend, sender=user, message=message)
+        
+        return convo.created_at
         
        
         
-    
-    def view_user(self):
-        # user_instance = User.objects.get(id=1)
-        # self.user = user_instance.username
-        # return self.user
-        pass

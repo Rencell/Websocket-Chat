@@ -4,51 +4,53 @@
 
 {% block content %}
 
-<div class="bg-slate-300 rounded-md p-5">
-
-
-    <a href="/chat"><- Back</a>
-    <h1>Chat with {{friend.username}}</h1>
+<div class="p-5">
+    <div class="bg-slate-800 rounded-md p-5">
     
-    <div hx-ext="ws" ws-connect="/ws/chat/{{conversation_room}}/">
-
-        <div id="chat_room" style="display: flex; flex-direction: column;"> 
-            {% for convo in conversations %}
-                
-                {% if convo.sender.username == user.username %}
-                    
-                    
-                    <div class="ms-auto flex flex-col mb-3">
-                        <div class=" bg-white p-3 rounded-full ms-auto">
-
-                            {{convo.message}}   
-                        </div>
-                        <b class="text-xs"> {{convo.created_at}}</b>
-                    </div> 
-                {% else %}
-                    
-
-                    <div>
-                        <div class=" bg-white p-3 rounded-full w-fit">
-
-                            {{convo.message}}   
-                        </div>
-                        <b class="text-xs"> {{convo.created_at}}</b>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-        <form class="flex" ws-send>
-            <input type="hidden" name="friend" value="{{friend.id}}">
-            <input
-                type="text"
-                placeholder="Type here"
-                class="input input-bordered grow" 
-                name="chat"/>
-        </form>
-
+    
+        <a href="/chat"><- Back</a>
+        <h1>Chat with {{friend.username}}</h1>
         
-
+        <div hx-ext="ws" ws-connect="/ws/chat/{{conversation_room}}/">
+    
+            <div id="chat_room" style="display: flex; flex-direction: column;"> 
+                {% for convo in conversations %}
+                    
+                    {% if convo.sender.username == user.username %}
+                        
+                        
+                        <div class="chat chat-end">
+                            <div class="chat-bubble chat-bubble-primary">
+    
+                                {{convo.message}}   
+                            </div>
+                            <b class="text-xs chat-footer opacity-50"> {{convo.created_at}}</b>
+                        </div> 
+                    {% else %}
+                        
+    
+                        <div class="chat chat-start">
+                            <div class="chat-bubble">
+    
+                                {{convo.message}}   
+                            </div>
+                            <b class="text-xs chat-footer opacity-50"> {{convo.created_at}}</b>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <form class="flex" ws-send>
+                <input type="hidden" name="friend" value="{{friend.id}}">
+                <input
+                    type="text"
+                    placeholder="Type here"
+                    class="input input-bordered grow" 
+                    name="chat"/>
+            </form>
+    
+            
+    
+        </div>
     </div>
 </div>
 {% endblock %}          

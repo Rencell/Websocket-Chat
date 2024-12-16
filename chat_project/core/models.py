@@ -3,6 +3,14 @@ from Accounts.models import User
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 
+
+class FriendRequests(models.Model):
+    user1 = models.ForeignKey(User, related_name='friend_request_user1', on_delete=models.CASCADE)
+    user2 = models.ForeignKey(User, related_name='friend_request_user2', on_delete=models.CASCADE)
+    status = models.CharField(max_length=10, default="pending")
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    
 class Friend(models.Model):
     user1 = models.ForeignKey(User, related_name='friend_user1', on_delete=models.CASCADE)
     user2 = models.ForeignKey(User, related_name='friend_user2', on_delete=models.CASCADE)

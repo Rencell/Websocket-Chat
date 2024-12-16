@@ -3,49 +3,78 @@
 {% block title %}Welcome{% endblock %}
 
 {% block content %}
-
-<form method="POST" action="{% url 'logout' %}">
-    {% csrf_token %}
-    <button type="submit">Logout</button>
-</form>
-
-<!-- Make join -->
-<!-- Make room -->
-
-{% for user in users %}
-
-        {{user.username}} 
+<div class="p-5">
     
-        <form action="{% url 'core_index' %}" method="post">
+        <form method="POST" class="flex" action="{% url 'logout' %}">
             {% csrf_token %}
-
-            <input type="hidden" name="auth" value="{{ user.id }}">
-            <input type="submit" value="Add Friend">
+            <button class="btn ms-auto" type="submit">Logout</button>
         </form>
-        
-{% endfor %}
-
-<hr>
-
-Already Friends:
-
-
-{% for friend  in already_friends %}
-
-    <div style="display: flex; gap:10px">
-        {{friend}}
-        <a href="{% url 'core_conversation' friend.id %}">Chat</a>
-    </div>
-
-{% endfor %}
     
-
-
-
-{% if messages %}
-    {% for message in messages %}
-        <p class="alert">{{ message }}</p>
-    {% endfor %}
-{% endif %}
+    
+    
+        <h1 class="text-2xl">Add a friend</h1>
+        <div class="py-5 flex gap-3">
+            {% for user in users %}
+                     
+                
+                    <div class="card card-compact bg-base-100 w-52 shadow-xl">
+                        <figure>
+                            <img
+                            src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
+                            alt="Shoes" />
+                        </figure>
+                        <div class="card-body">
+                            <h2 class="card-title">{{user.username}}</h2>
+                            <p>If a dog chews shoes whose shoes does he choose?</p>
+                            <div class="card-actions justify-end">
+                                <form action="{% url 'core_index' %}" method="post">
+                                    {% csrf_token %}
+                    
+                                    <input type="hidden" name="auth" value="{{ user.id }}">
+                                    <input class="btn btn-sm btn-primary" type="submit" value="Add Friend">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                
+                    
+            {% endfor %}
+        </div>
+    
+    
+    
+    
+        <div role="alert" class="alert shadow-lg bg-pink-500 text-white">
+            <i class="bi bi-people"></i>
+            <div>
+            <h3 class="font-bold">New friend request!</h3>
+            <div class="text-xs">You have 1 unread message</div>
+            </div>
+            <a class="btn btn-sm btn-ghost" href="{% url 'core_pending_request' %}">see</a>
+        </div>
+    
+        Already Friends:
+        {% for friend  in already_friends %}
+    
+            <div role="alert" class="alert shadow-lg mb-2">
+                <div class="avatar">
+                    <div class="w-11 rounded-full">
+                      <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                    </div>
+                  </div>
+                <h3 class="font-bold">{{friend}}</h3>
+                <button class="btn btn-sm"><a href="{% url 'core_conversation' friend.id %}">Chat</a></button>
+            </div>
+        {% endfor %}
+            
+    
+    
+    
+        {% if messages %}
+            {% for message in messages %}
+                <p class="alert">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+</div>
 
 {% endblock %}

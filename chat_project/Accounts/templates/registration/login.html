@@ -1,15 +1,50 @@
+
 {% extends 'base.html' %}
+{% load widget_tweaks %}
 
 {% block title %}Login{% endblock %}
 
 {% block content %}
 
-<form action="{% url 'login' %}" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Submit</button>
-</form>
 
-<p>Don't have account? </p><a href="{% url 'register' %}">Register here</a>
+
+
+
+
+<div class="hero bg-base-200 min-h-screen">
+    <div class="hero-content flex-col lg:flex-row-reverse">
+      <div class="text-center lg:text-left">
+        <h1 class="text-5xl font-bold">Login now!</h1>
+        <p class="py-6">
+          Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem
+          quasi. In deleniti eaque aut repudiandae et a id nisi.
+        </p>
+      </div>
+      <div class="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
+        <form class="card-body" action="{% url 'login' %}" method="post">
+          {% csrf_token %}
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Username</span>
+            </label>
+
+            {% render_field form.username placeholder="username" class="input input-bordered"%}
+          </div>
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Password</span>
+            </label>
+            {% render_field form.password placeholder="password" class="input input-bordered"%}
+            <label class="label">
+              <a href="{% url 'register' %}" class="label-text-alt link link-hover">Don't have an account? <span class="text-violet-400">Register now!</span></a>
+            </label>
+          </div>
+          <div class="form-control mt-6">
+            <button type="submit" class="btn btn-primary">Login</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
 {% endblock %}
